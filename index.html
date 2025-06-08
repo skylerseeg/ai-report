@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The AI Enigma: Interactive Economic Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Slate and Cyan Accents -->
+    <!-- Application Structure Plan: The application is structured into four thematic, non-linear sections to facilitate user-driven exploration: 1) The Big Picture (macro forecasts & the productivity paradox), 2) Industry Deep Dive (sector-specific impacts), 3) The Human Element (labor market & inequality), and 4) The Road Ahead (challenges like energy use & measurement). This structure was chosen over a linear report replication to allow users to jump directly to topics of interest, compare related concepts (like jobs and inequality) side-by-side, and digest the complex information in manageable, themed chunks. Interaction is centered on toggling data views, hovering for details, and filtering content, promoting an active learning experience. -->
+    <!-- Visualization & Content Choices: 
+        1.  Report Info: Economic Forecasts (McKinsey, PwC, IMF, etc.). Goal: Compare. Viz: Interactive Bar Chart (Chart.js). Interaction: Buttons to toggle between min/max projections. Justification: A bar chart provides easy visual comparison of varying forecasts. Interactivity adds a layer of depth, allowing users to see the full range of uncertainty.
+        2.  Report Info: Industry Impact (Manufacturing, Healthcare, Finance). Goal: Organize & Inform. Viz: Tabbed content with animated progress bars (HTML/CSS/JS). Interaction: Clicking tabs to reveal sector-specific text and data. Justification: Tabs organize dense information cleanly. Animated bars provide a quick visual gauge of AI's impact level in key functions, making it more engaging than static text.
+        3.  Report Info: Task Automation % (WEF data). Goal: Compare. Viz: Horizontal Bar Chart (Chart.js). Interaction: Hover tooltips for precise percentages. Justification: Clearly shows the disparity in automation potential across different roles.
+        4.  Report Info: Energy Consumption Forecast (IMF). Goal: Change. Viz: Line Chart (Chart.js). Interaction: Hover for data points. Justification: A line chart is the standard and most effective way to show a trend over time.
+        5.  Report Info: Inequality (IMF/Oxfam). Goal: Inform/Relate. Viz: Dynamic stat cards and contextual text (HTML/JS). Interaction: Content appears as user scrolls. Justification: Key stats are highlighted for impact, with related text providing necessary context on the complex relationship between AI, wages, and wealth.
+        6.  Report Info: Measurement Challenges/Data Gaps. Goal: Organize. Viz: Interactive accordion list (HTML/JS). Interaction: Clicking to expand/collapse details. Justification: Presents a list of complex issues in a digestible format, allowing users to explore areas of interest without being overwhelmed.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4; /* Warm Neutral */
+            color: #27272a; /* Zinc 900 */
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            background-color: #06b6d4; /* Cyan 500 */
+            transition: all 0.3s ease-in-out;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #0e7490; /* Cyan 700 */
+        }
+        .nav-link.active::after, .nav-link:hover::after {
+            width: 100%;
+            left: 0;
+        }
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0; /* Slate 200 */
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -2px rgb(0 0 0 / 0.07);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 450px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            height: 0.75rem;
+        }
+        .progress-bar {
+            background-color: #06b6d4;
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 1.5s ease-in-out;
+            width: 0%;
+        }
+        .accordion-item {
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .accordion-header {
+            cursor: pointer;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .accordion-icon {
+            transition: transform 0.3s ease;
+        }
+        .accordion-icon.open {
+            transform: rotate(45deg);
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .stat-card {
+            background-color: #f1f5f9; /* Slate 100 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .source-list {
+            list-style-position: inside;
+            text-indent: -1.5em;
+            padding-left: 1.5em;
+        }
+        .source-list li {
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-40 w-full border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-slate-800">The AI Enigma</span>
+                </div>
+                <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
+                    <a class="nav-link active" data-target="big-picture">The Big Picture</a>
+                    <a class="nav-link" data-target="industry-dive">Industry Deep Dive</a>
+                    <a class="nav-link" data-target="human-element">The Human Element</a>
+                    <a class="nav-link" data-target="road-ahead">The Road Ahead</a>
+                    <a class="nav-link" data-target="sources">Sources</a>
+                </nav>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm">
+                        <option value="big-picture">The Big Picture</option>
+                        <option value="industry-dive">Industry Deep Dive</option>
+                        <option value="human-element">The Human Element</option>
+                        <option value="road-ahead">The Road Ahead</option>
+                        <option value="sources">Sources</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <!-- Section 1: The Big Picture -->
+        <section id="big-picture" class="content-section active">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">The AI Economy: A Multi-Trillion Dollar Question</h1>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">This section explores the immense economic forecasts for AI's impact and the "productivity paradox" — the puzzling gap between technological potential and measured economic growth. You can interact with the chart to see the full range of projections.</p>
+            </div>
+
+            <div class="card mb-12">
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Global Economic Impact Forecasts</h2>
+                <p class="text-slate-500 mb-6">Projections for AI's contribution to the global economy vary widely, reflecting deep uncertainties about adoption speed and scope. Use the buttons to visualize the low-end and high-end estimates from key institutions. Hover over the bars for detailed figures.</p>
+                <div class="text-center mb-4 space-x-2">
+                    <button id="show-low" class="px-4 py-2 text-sm font-semibold bg-cyan-500 text-white rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-50 transition">Show Low-End Projections</button>
+                    <button id="show-high" class="px-4 py-2 text-sm font-semibold bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-opacity-50 transition">Show High-End Projections</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="forecastChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="card">
+                     <h2 class="text-2xl font-bold text-slate-800 mb-4">The Productivity Paradox</h2>
+                     <div class="space-y-4 text-slate-600">
+                        <p>We see AI's effects everywhere... except in the productivity stats. This paradox describes the strange lag between AI's transformative power and its impact on broad economic metrics. Several key theories attempt to explain this.</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong class="text-slate-700">Implementation Lags:</strong> The most cited reason. It takes years, even decades, for foundational technologies like AI to be fully integrated with new workflows, business models, and skilled labor.</li>
+                            <li><strong class="text-slate-700">Mismeasurement:</strong> Traditional metrics like GDP may fail to capture AI's true value, such as improvements in quality, time savings, or the benefits of free AI services.</li>
+                            <li><strong class="text-slate-700">Concentrated Gains:</strong> The benefits might be flowing to a few large firms, not dispersing widely enough to lift the entire economy's productivity average.</li>
+                             <li><strong class="text-slate-700">Reallocation of Time:</strong> Workers may use time saved by AI to perform other tasks or learn the AI itself, rather than producing more output immediately.</li>
+                        </ul>
+                     </div>
+                </div>
+                <div class="text-center p-8">
+                     <div class="text-8xl font-black text-slate-200">?</div>
+                     <p class="mt-4 text-xl font-semibold text-slate-700">A central puzzle for economists: When will AI's potential translate into measurable prosperity for all?</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Industry Deep Dive -->
+        <section id="industry-dive" class="content-section">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">Sectoral Shockwaves</h1>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">AI is not a uniform force; it's a catalyst rewriting the playbooks of individual industries. This section provides a snapshot of AI's transformative role in key sectors. Click the tabs to explore how AI is being applied and see which business functions are most affected.</p>
+            </div>
+            <div class="card">
+                <div class="flex border-b border-slate-200">
+                    <button class="industry-tab active flex-1 py-3 px-2 text-center font-semibold text-cyan-600 border-b-2 border-cyan-600" data-industry="manufacturing">Manufacturing</button>
+                    <button class="industry-tab flex-1 py-3 px-2 text-center font-semibold text-slate-500" data-industry="healthcare">Healthcare</button>
+                    <button class="industry-tab flex-1 py-3 px-2 text-center font-semibold text-slate-500" data-industry="finance">Finance</button>
+                </div>
+                <div id="industry-content" class="pt-6 grid md:grid-cols-2 gap-8 items-start">
+                    <!-- JS will populate this -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 3: The Human Element -->
+        <section id="human-element" class="content-section">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">The Future of Work & The Great Divide</h1>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">AI is profoundly reshaping labor markets and raising critical questions about economic inequality. Here, we examine the potential for job automation, the shifting demand for skills, and whether AI will be a tool for equality or a driver of disparity.</p>
+            </div>
+
+            <div class="grid md:grid-cols-5 gap-8">
+                <div class="md:col-span-3 card">
+                     <h2 class="text-2xl font-bold text-slate-800 mb-2">The Automation-Transformation Spectrum</h2>
+                     <p class="text-slate-500 mb-6">AI's impact is less about outright job replacement and more about automating specific tasks within jobs. The chart shows the estimated percentage of tasks susceptible to automation for various roles, highlighting a particular squeeze on entry-level white-collar positions.</p>
+                    <div class="chart-container h-96">
+                        <canvas id="automationChart"></canvas>
+                    </div>
+                </div>
+                <div class="md:col-span-2 card">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4">The Retraining Imperative</h2>
+                    <div class="space-y-4 text-slate-600">
+                        <p>While "reskilling" is the common response, its effectiveness at scale is uncertain. Key challenges include:</p>
+                        <ul class="space-y-3">
+                           <li class="flex items-start">
+                                <span class="text-xl font-bold text-cyan-500 mr-3">1</span>
+                                <div><strong class="block text-slate-700">Job Sufficiency:</strong> Will there be enough new "skilled" jobs to absorb all displaced workers?</div>
+                           </li>
+                           <li class="flex items-start">
+                                <span class="text-xl font-bold text-cyan-500 mr-3">2</span>
+                                <div><strong class="block text-slate-700">Worker Ability/Willingness:</strong> Can all workers, especially older ones, realistically undertake costly and time-consuming retraining?</div>
+                           </li>
+                           <li class="flex items-start">
+                                <span class="text-xl font-bold text-cyan-500 mr-3">3</span>
+                                <div><strong class="block text-slate-700">Predicting Demand:</strong> How can we train for the jobs of tomorrow when the future is so uncertain and rapidly changing?</div>
+                           </li>
+                        </ul>
+                        <p class="pt-4 border-t border-slate-200">This uncertainty suggests that broader societal solutions, like rethinking social safety nets, may be needed alongside individual skill enhancement.</p>
+                    </div>
+                </div>
+            </div>
+             <div class="card mt-8">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4 text-center">AI's Double Edge: A Tool for Equality or Disparity?</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-700 mb-2">The Case for Reduced Wage Gaps</h3>
+                        <p class="text-slate-600">Unlike past tech waves that often hit low-wage jobs hardest, AI shows significant potential to automate tasks in high-income knowledge work. In theory, this could compress the wage scale by reducing the premium on some high-paid roles. However, this is counteracted by AI's ability to augment high-skill workers, potentially making them even more productive and valuable.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-700 mb-2">The Risk of Greater Wealth Disparity</h3>
+                        <p class="text-slate-600">The more pronounced risk is in wealth inequality. As AI drives efficiency and profits, these gains are likely to flow to the owners of capital—the shareholders of AI companies and AI-adopting firms. This could accelerate the concentration of wealth, widening the gap between capital owners and labor.</p>
+                    </div>
+                </div>
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="stat-card">
+                        <div class="text-3xl font-bold text-cyan-600">2.6B</div>
+                        <div class="text-sm text-slate-500">People Lack Internet Access</div>
+                    </div>
+                     <div class="stat-card">
+                        <div class="text-3xl font-bold text-cyan-600">40%</div>
+                        <div class="text-sm text-slate-500">of Global Workforce May Be Impacted</div>
+                    </div>
+                    <div class="stat-card col-span-2 md:col-span-1">
+                        <div class="text-3xl font-bold text-cyan-600">~60%</div>
+                        <div class="text-sm text-slate-500">of Billionaire Wealth from Monopoly/Inheritance</div>
+                    </div>
+                </div>
+                <p class="text-center mt-4 text-sm text-slate-500">These figures highlight the critical need for inclusive policies to bridge the digital divide and ensure AI's benefits are shared broadly, preventing it from becoming a new engine of inequality.</p>
+            </div>
+        </section>
+
+        <!-- Section 4: The Road Ahead -->
+        <section id="road-ahead" class="content-section">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">Navigating the Uncharted</h1>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">AI's rapid advance uncovers a vast territory of unknowns, from its staggering energy use to the challenge of measuring its true economic value. This final section explores these critical challenges and the policy considerations for charting a responsible path forward.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div class="card">
+                     <h2 class="text-2xl font-bold text-slate-800 mb-2">The AI Energy Dilemma</h2>
+                     <p class="text-slate-500 mb-6">AI's progress is powered by massive data centers, whose electricity demand is projected to soar. This chart illustrates the potential rise in global data center electricity consumption, posing a significant challenge to climate goals if not met with clean energy.</p>
+                    <div class="chart-container h-80">
+                         <canvas id="energyChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                     <h2 class="text-2xl font-bold text-slate-800 mb-2">The Measurement Maze</h2>
+                     <p class="text-slate-500 mb-6">Why is AI's impact so hard to quantify? Traditional economic metrics struggle to capture its value. Below are key challenges identified by economists. Click on each to learn more.</p>
+                    <div id="accordion-container">
+                        <!-- JS will populate this -->
+                    </div>
+                </div>
+            </div>
+             <div class="card">
+                 <h2 class="text-2xl font-bold text-slate-800 mb-4 text-center">Policy Considerations for a Balanced AI Future</h2>
+                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-slate-600">
+                     <div class="p-4 bg-slate-50 rounded-lg">
+                         <h3 class="font-semibold text-slate-800">Invest in Measurement</h3>
+                         <p class="text-sm">Develop new metrics and invest in robust data collection to move beyond the "foggy understanding" of AI's true impact.</p>
+                     </div>
+                     <div class="p-4 bg-slate-50 rounded-lg">
+                         <h3 class="font-semibold text-slate-800">Reform Education</h3>
+                         <p class="text-sm">Shift focus from rote memorization to critical thinking, adaptability, and skills that complement AI capabilities.</p>
+                     </div>
+                     <div class="p-4 bg-slate-50 rounded-lg">
+                         <h3 class="font-semibold text-slate-800">Promote Competition</h3>
+                         <p class="text-sm">Use antitrust tools and promote open-source models to prevent monopolization by a few tech giants.</p>
+                     </div>
+                     <div class="p-4 bg-slate-50 rounded-lg">
+                         <h3 class="font-semibold text-slate-800">Establish Ethical Guardrails</h3>
+                         <p class="text-sm">Implement agile regulations to address bias, ensure transparency, and build public trust in AI systems.</p>
+                     </div>
+                     <div class="p-4 bg-slate-50 rounded-lg">
+                         <h3 class="font-semibold text-slate-800">Strengthen Safety Nets</h3>
+                         <p class="text-sm">Re-evaluate social support systems to provide economic security for workers disrupted by automation.</p>
+                     </div>
+                     <div class="p-4 bg-slate-50 rounded-lg">
+                         <h3 class="font-semibold text-slate-800">Mandate Sustainable AI</h3>
+                         <p class="text-sm">Create policies that incentivize energy-efficient AI and the use of renewable energy to power it.</p>
+                     </div>
+                 </div>
+             </div>
+        </section>
+
+        <!-- Section 5: Sources -->
+        <section id="sources" class="content-section">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">Cited Sources</h1>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">This section provides a list of the sources referenced throughout this interactive report.</p>
+            </div>
+            <div class="card">
+                <div id="sources-container" class="text-slate-600 text-sm">
+                    <!-- JS will populate this -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- DATA ---
+            const forecastData = {
+                labels: ['McKinsey (GenAI)', 'McKinsey (Total AI)', 'PwC (GDP Boost)', 'Acemoglu (U.S. GDP)'],
+                low: [2.6, 15.5, 0, 1],
+                high: [4.4, 22.9, 15, 1],
+                lowLabels: ['$2.6T', '$15.5T', 'N/A', '1%'],
+                highLabels: ['$4.4T', '$22.9T', '15%', '1%']
+            };
+
+            const automationData = {
+                labels: ['Sales Rep.', 'Market Research', 'Software Eng.', 'Healthcare Support', 'Knowledge Work (Avg)'],
+                percentages: [67, 53, 40, 35, 65] 
+            };
+            
+            const energyData = {
+                labels: ['2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'],
+                consumption: [500, 620, 750, 900, 1070, 1250, 1380, 1500]
+            };
+            
+            const industryData = {
+                manufacturing: {
+                    title: "AI-Powered Renaissance",
+                    text: "In manufacturing, AI is the core of 'Industry 4.0', creating smart factories, optimizing supply chains, and enhancing quality control. AI moves beyond simple automation to tackle complex, human-dependent tasks.",
+                    examples: [
+                        { name: "Predictive Maintenance", value: 85 },
+                        { name: "Supply Chain Optimization", value: 75 },
+                        { name: "Quality Control Automation", value: 90 }
+                    ],
+                    case_study: "Case Study: A Tier 2 auto supplier used AI visual analysis to detect inefficiencies on its assembly line, doubling the throughput of production."
+                },
+                healthcare: {
+                    title: "Revolution in Discovery & Diagnostics",
+                    text: "AI is accelerating drug discovery, improving the accuracy of medical imaging diagnostics, and personalizing treatment plans, with a dramatic increase in FDA-approved AI medical devices.",
+                    examples: [
+                        { name: "Drug Discovery & R&D", value: 80 },
+                        { name: "Diagnostic Imaging Analysis", value: 95 },
+                        { name: "Personalized Treatment", value: 70 }
+                    ],
+                    case_study: "Case Study: Roche uses a 'lab in the loop' where AI models predict drug targets, which are then experimentally tested, creating a virtuous cycle of discovery."
+                },
+                finance: {
+                    title: "Robo-Advisors & Fraud Busters",
+                    text: "The financial sector uses AI for high-speed algorithmic trading, robust real-time fraud detection, and sophisticated credit risk assessment, enhancing both efficiency and security.",
+                    examples: [
+                        { name: "Fraud Detection", value: 90 },
+                        { name: "Algorithmic Trading", value: 85 },
+                        { name: "Credit Risk Assessment", value: 75 }
+                    ],
+                    case_study: "Case Study: JPMorgan Chase deploys advanced AI to analyze transaction data in real-time, accurately identifying and flagging fraudulent activities."
+                }
+            };
+
+            const accordionData = [
+                { title: "Evolving Definition", content: "The very definition of 'AI use' is a moving target, making consistent tracking difficult as AI becomes embedded in everyday software." },
+                { title: "Data Access & Bias", content: "Companies are often reluctant to share proprietary data, and available data (like job postings) can be biased towards larger, more digitized firms." },
+                { title: "Outdated Classifications", content: "Standard industry and occupation codes (NAICS, SOC) haven't caught up, making it hard to identify and track AI-specific economic activity." },
+                { title: "Missing Individual Use", content: "Productivity gains from individuals using public AI tools like ChatGPT for work are often invisible in official business surveys." },
+                { title: "Intangible Value", content: "It's difficult to put a price on AI's benefits like improved product quality, enhanced decision-making, or time saved, which don't always translate to direct sales." }
+            ];
+
+            const sourcesData = [
+                "[1] McKinsey & Company. 'The economic potential of generative AI: The next productivity frontier'.",
+                "[2] McKinsey & Company. 'The state of AI in 2023: Generative AI’s breakout year'.",
+                "[3] PwC. 'Sizing the prize: What’s the real value of AI for your business and how can you capitalise?'.",
+                "[4] PwC. 'The macroeconomic impact of AI'.",
+                "[5] International Monetary Fund (IMF). 'Gen-AI: Artificial Intelligence and the Future of Work'.",
+                "[6] Acemoglu, D. 'The Simple Economics of Generative AI'.",
+                "[7] Brynjolfsson, E., Rock, D., & Syverson, C. 'Artificial Intelligence and the Modern Productivity Paradox'.",
+                "[8] Agrawal, A., Gans, J., & Goldfarb, A. 'The Turing Trap: The Promise & Peril of Human-Like Artificial Intelligence'.",
+                "[9] NVIDIA. 'How AI Is Transforming Manufacturing From Design to the Factory Floor'.",
+                "[10] World Economic Forum. 'How is AI changing the world?'.",
+                "[11] BMW Group. 'The Power of Virtual'.",
+                "[12] Genentech. 'How AI is Accelerating Medicines to Patients'.",
+                "[13] Congressional Budget Office (CBO). 'How Might Artificial Intelligence Affect Health Care?'.",
+                "[14] Stanford University. 'AI in healthcare: a new era of medicine'.",
+                "[15] Stanford HAI. 'Artificial Intelligence Index Report 2024'.",
+                "[16] IBM. 'AI in Finance'.",
+                "[17] World Economic Forum. 'This is how AI is transforming financial services'.",
+                "[18] World Economic Forum. 'The Future of Jobs Report 2023'.",
+                "[19] World Economic Forum. 'This is the impact AI will have on the job market, according to the WEF'.",
+                "[20] World Economic Forum. 'These are the jobs that will be created by AI'.",
+                "[21] Stanford HAI. 'Artificial Intelligence Index Report 2023'.",
+                "[22] Brookings Institution. 'AI and the future of work: What do we know?'.",
+                "[23] Microsoft. 'Brad Smith on how AI can serve Europe'.",
+                "[24] Andreessen Horowitz. 'The New New Moats: Why Systems of Intelligence are the Next Defensible Business Model'.",
+                "[25] Andreessen Horowitz. 'The Data Platform for the AI-Native Era'.",
+                "[26] International Monetary Fund (IMF). 'AI’s Power Demand Is a Concern for Climate'.",
+                "[27] U.S. Bureau of Economic Analysis (BEA). 'A Roadmap to Measuring the Effects of AI in the U.S. Economy'.",
+                "[28] American Economic Association (AEA). 'AEA Papers and Proceedings 2023'.",
+                "[29] International Monetary Fund (IMF) Working Paper. 'The Labor Market Impact of Big Data and AI'.",
+                "[30] Oxfam. 'Inequality Inc.'.",
+                "[31] Oxfam. 'Richest 1% bag nearly twice as much wealth as the rest of the world put together over the past two years'.",
+                "[32] OECD. 'The OECD AI Principles'.",
+                "[33] Microsoft Research. 'The Future of Work with AI'.",
+                "[34] Teevan, J. 'How AI Will Change the Future of Work'."
+            ];
+
+
+            // --- CHARTS ---
+            let forecastChart, automationChart, energyChart;
+
+            function createForecastChart(dataToShow = 'low') {
+                const ctx = document.getElementById('forecastChart').getContext('2d');
+                if (forecastChart) {
+                    forecastChart.destroy();
+                }
+                forecastChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: forecastData.labels,
+                        datasets: [{
+                            label: 'Projected Annual Value / GDP Boost',
+                            data: forecastData[dataToShow],
+                            backgroundColor: '#22d3ee',
+                            borderColor: '#06b6d4',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${forecastData[dataToShow + 'Labels'][context.dataIndex]}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: { 
+                                    display: true, 
+                                    text: dataToShow === 'high' || dataToShow === 'low' ? 'Value in Trillions (USD) / GDP %' : ''
+                                },
+                                grid: { color: '#f1f5f9' }
+                            },
+                            y: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createAutomationChart() {
+                const ctx = document.getElementById('automationChart').getContext('2d');
+                 automationChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: automationData.labels,
+                        datasets: [{
+                            label: '% of Tasks Automatable',
+                            data: automationData.percentages,
+                            backgroundColor: '#67e8f9',
+                            borderColor: '#06b6d4',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.raw}% of tasks`;
+                                    }
+                                }
+                            }
+                        },
+                         scales: {
+                            x: { 
+                                title: { display: true, text: '% of Tasks Susceptible to Automation' },
+                                grid: { color: '#f1f5f9' }
+                            },
+                             y: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            function createEnergyChart() {
+                const ctx = document.getElementById('energyChart').getContext('2d');
+                energyChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: energyData.labels,
+                        datasets: [{
+                            label: 'Projected TWh Consumption',
+                            data: energyData.consumption,
+                            fill: true,
+                            backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                            borderColor: '#06b6d4',
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                         responsive: true,
+                         maintainAspectRatio: false,
+                         plugins: {
+                            legend: { display: false },
+                         },
+                         scales: {
+                             y: { 
+                                 title: { display: true, text: 'Terawatt-hours (TWh)' },
+                                 beginAtZero: true,
+                                 grid: { color: '#f1f5f9' }
+                            },
+                             x: { grid: { display: false } }
+                         }
+                    }
+                });
+            }
+
+
+            // --- UI LOGIC ---
+            function updateIndustryContent(industryKey) {
+                const content = industryData[industryKey];
+                const container = document.getElementById('industry-content');
+                
+                let examplesHtml = content.examples.map(ex => `
+                    <div class="mb-3">
+                        <div class="flex justify-between items-center mb-1 text-sm font-semibold">
+                            <span>${ex.name}</span>
+                            <span>${ex.value}%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" data-width="${ex.value}"></div>
+                        </div>
+                    </div>
+                `).join('');
+
+                container.innerHTML = `
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">${content.title}</h3>
+                        <p class="text-slate-600 mb-4">${content.text}</p>
+                        <p class="text-sm text-slate-500 bg-slate-50 p-3 rounded-md italic">${content.case_study}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-slate-700 mb-3">Impact on Key Business Functions</h4>
+                        ${examplesHtml}
+                    </div>
+                `;
+                
+                // Animate progress bars
+                 setTimeout(() => {
+                    const progressBars = container.querySelectorAll('.progress-bar');
+                    progressBars.forEach(bar => {
+                        bar.style.width = `${bar.dataset.width}%`;
+                    });
+                }, 100);
+            }
+
+            function createAccordion() {
+                const container = document.getElementById('accordion-container');
+                container.innerHTML = accordionData.map((item, index) => `
+                    <div class="accordion-item">
+                        <div class="accordion-header" data-index="${index}">
+                            <h4 class="font-semibold text-slate-700">${item.title}</h4>
+                             <span class="accordion-icon text-cyan-500 font-bold text-2xl">+</span>
+                        </div>
+                        <div class="accordion-content text-slate-600 text-sm">
+                           <div class="px-4 pt-2 pb-4">
+                                <p>${item.content}</p>
+                           </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                container.addEventListener('click', function(e) {
+                    const header = e.target.closest('.accordion-header');
+                    if (!header) return;
+                    
+                    const currentContent = header.nextElementSibling;
+                    const currentIcon = header.querySelector('.accordion-icon');
+                    const wasOpen = currentContent.classList.contains('open');
+
+                    // Close all accordion items first
+                    container.querySelectorAll('.accordion-content').forEach(content => {
+                        content.style.maxHeight = null;
+                        content.classList.remove('open');
+                    });
+                    container.querySelectorAll('.accordion-icon').forEach(icon => {
+                        icon.classList.remove('open');
+                    });
+
+                    // If the clicked item was not already open, open it
+                    if (!wasOpen) {
+                        currentContent.classList.add('open');
+                        currentIcon.classList.add('open');
+                        currentContent.style.maxHeight = currentContent.scrollHeight + "px";
+                    }
+                });
+            }
+            
+            function createSourcesList() {
+                const container = document.getElementById('sources-container');
+                const listHtml = sourcesData.map(source => `<li>${source}</li>`).join('');
+                container.innerHTML = `<ol class="source-list">${listHtml}</ol>`;
+            }
+
+            // --- NAVIGATION ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileNav = document.getElementById('mobile-nav');
+            const sections = document.querySelectorAll('.content-section');
+            let activeCharts = {};
+
+            function switchSection(targetId) {
+                // Deactivate all
+                navLinks.forEach(link => link.classList.remove('active'));
+                sections.forEach(section => section.classList.remove('active'));
+                
+                // Activate target
+                const targetLink = document.querySelector(`.nav-link[data-target="${targetId}"]`);
+                const targetSection = document.getElementById(targetId);
+                
+                if (targetLink) targetLink.classList.add('active');
+                if (targetSection) targetSection.classList.add('active');
+                
+                mobileNav.value = targetId;
+                
+                // Lazy-load content
+                if(targetId === 'big-picture' && !activeCharts.forecast) {
+                    createForecastChart();
+                    activeCharts.forecast = true;
+                }
+                 if(targetId === 'human-element' && !activeCharts.automation) {
+                    createAutomationChart();
+                    activeCharts.automation = true;
+                }
+                if(targetId === 'road-ahead' && !activeCharts.energy) {
+                    createEnergyChart();
+                    createAccordion();
+                    activeCharts.energy = true;
+                }
+                if(targetId === 'industry-dive' && !activeCharts.industry) {
+                    updateIndustryContent('manufacturing');
+                    activeCharts.industry = true;
+                }
+                if(targetId === 'sources' && !activeCharts.sources) {
+                    createSourcesList();
+                    activeCharts.sources = true;
+                }
+
+                window.scrollTo(0, 0);
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => switchSection(link.dataset.target));
+            });
+
+            mobileNav.addEventListener('change', () => switchSection(mobileNav.value));
+
+
+            // --- EVENT LISTENERS ---
+            document.getElementById('show-low').addEventListener('click', () => createForecastChart('low'));
+            document.getElementById('show-high').addEventListener('click', () => createForecastChart('high'));
+
+            document.querySelectorAll('.industry-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.industry-tab').forEach(t => t.classList.remove('active', 'text-cyan-600', 'border-cyan-600'));
+                    this.classList.add('active', 'text-cyan-600', 'border-cyan-600');
+                    updateIndustryContent(this.dataset.industry);
+                });
+            });
+
+
+            // --- INITIALIZATION ---
+            switchSection('big-picture');
+
+        });
+    </script>
+</body>
+</html>
