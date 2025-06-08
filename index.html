@@ -128,6 +128,17 @@
         .source-list li {
             margin-bottom: 0.75rem;
         }
+        .source-list a {
+            color: #0891b2; /* Cyan 600 */
+            text-decoration: underline;
+            text-decoration-color: #67e8f9; /* Cyan 300 */
+            text-underline-offset: 2px;
+            transition: color 0.2s ease, text-decoration-color 0.2s ease;
+        }
+        .source-list a:hover {
+            color: #0e7490; /* Cyan 700 */
+            text-decoration-color: #0e7490;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -418,40 +429,40 @@
             ];
 
             const sourcesData = [
-                "[1] McKinsey & Company. 'The economic potential of generative AI: The next productivity frontier'.",
-                "[2] McKinsey & Company. 'The state of AI in 2023: Generative AI’s breakout year'.",
-                "[3] PwC. 'Sizing the prize: What’s the real value of AI for your business and how can you capitalise?'.",
-                "[4] PwC. 'The macroeconomic impact of AI'.",
-                "[5] International Monetary Fund (IMF). 'Gen-AI: Artificial Intelligence and the Future of Work'.",
-                "[6] Acemoglu, D. 'The Simple Economics of Generative AI'.",
-                "[7] Brynjolfsson, E., Rock, D., & Syverson, C. 'Artificial Intelligence and the Modern Productivity Paradox'.",
-                "[8] Agrawal, A., Gans, J., & Goldfarb, A. 'The Turing Trap: The Promise & Peril of Human-Like Artificial Intelligence'.",
-                "[9] NVIDIA. 'How AI Is Transforming Manufacturing From Design to the Factory Floor'.",
-                "[10] World Economic Forum. 'How is AI changing the world?'.",
-                "[11] BMW Group. 'The Power of Virtual'.",
-                "[12] Genentech. 'How AI is Accelerating Medicines to Patients'.",
-                "[13] Congressional Budget Office (CBO). 'How Might Artificial Intelligence Affect Health Care?'.",
-                "[14] Stanford University. 'AI in healthcare: a new era of medicine'.",
-                "[15] Stanford HAI. 'Artificial Intelligence Index Report 2024'.",
-                "[16] IBM. 'AI in Finance'.",
-                "[17] World Economic Forum. 'This is how AI is transforming financial services'.",
-                "[18] World Economic Forum. 'The Future of Jobs Report 2023'.",
-                "[19] World Economic Forum. 'This is the impact AI will have on the job market, according to the WEF'.",
-                "[20] World Economic Forum. 'These are the jobs that will be created by AI'.",
-                "[21] Stanford HAI. 'Artificial Intelligence Index Report 2023'.",
-                "[22] Brookings Institution. 'AI and the future of work: What do we know?'.",
-                "[23] Microsoft. 'Brad Smith on how AI can serve Europe'.",
-                "[24] Andreessen Horowitz. 'The New New Moats: Why Systems of Intelligence are the Next Defensible Business Model'.",
-                "[25] Andreessen Horowitz. 'The Data Platform for the AI-Native Era'.",
-                "[26] International Monetary Fund (IMF). 'AI’s Power Demand Is a Concern for Climate'.",
-                "[27] U.S. Bureau of Economic Analysis (BEA). 'A Roadmap to Measuring the Effects of AI in the U.S. Economy'.",
-                "[28] American Economic Association (AEA). 'AEA Papers and Proceedings 2023'.",
-                "[29] International Monetary Fund (IMF) Working Paper. 'The Labor Market Impact of Big Data and AI'.",
-                "[30] Oxfam. 'Inequality Inc.'.",
-                "[31] Oxfam. 'Richest 1% bag nearly twice as much wealth as the rest of the world put together over the past two years'.",
-                "[32] OECD. 'The OECD AI Principles'.",
-                "[33] Microsoft Research. 'The Future of Work with AI'.",
-                "[34] Teevan, J. 'How AI Will Change the Future of Work'."
+                `[1] McKinsey & Company. '<a href="https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/the-economic-potential-of-generative-ai-the-next-productivity-frontier" target="_blank">The economic potential of generative AI: The next productivity frontier</a>'.`,
+                `[2] McKinsey & Company. '<a href="https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai-in-2023-generative-ais-breakout-year" target="_blank">The state of AI in 2023: Generative AI’s breakout year</a>'.`,
+                `[3] PwC. '<a href="https://www.pwc.com/gx/en/issues/data-and-analytics/publications/artificial-intelligence-study.html" target="_blank">Sizing the prize: What’s the real value of AI for your business and how can you capitalise?</a>'.`,
+                `[4] PwC. '<a href="https://www.pwc.com/gx/en/research-insights/economy/the-macroeconomic-impact-of-ai.html" target="_blank">The macroeconomic impact of AI</a>'.`,
+                `[5] International Monetary Fund (IMF). '<a href="https://www.imf.org/en/Publications/Staff-Discussion-Notes/Issues/2024/01/14/Gen-AI-Artificial-Intelligence-and-the-Future-of-Work-542379" target="_blank">Gen-AI: Artificial Intelligence and the Future of Work</a>'.`,
+                `[6] Acemoglu, D. '<a href="https://economics.mit.edu/sites/default/files/2023-11/The%20Simple%20Economics%20of%20Generative%20AI%20%28NBER%29.pdf" target="_blank">The Simple Economics of Generative AI</a>'.`,
+                `[7] Brynjolfsson, E., Rock, D., & Syverson, C. '<a href="https://www.nber.org/system/files/working_papers/w24001/w24001.pdf" target="_blank">Artificial Intelligence and the Modern Productivity Paradox</a>'.`,
+                `[8] Agrawal, A., Gans, J., & Goldfarb, A. '<a href="https://www.nber.org/digest/202206/turing-trap-promise-peril-human-artificial-intelligence" target="_blank">The Turing Trap: The Promise & Peril of Human-Like Artificial Intelligence</a>'.`,
+                `[9] NVIDIA. '<a href="https://blogs.nvidia.com/blog/ai-transforming-manufacturing/" target="_blank">How AI Is Transforming Manufacturing From Design to the Factory Floor</a>'.`,
+                `[10] World Economic Forum. '<a href="https://www.weforum.org/agenda/2023/06/how-is-ai-changing-the-world/" target="_blank">How is AI changing the world?</a>'.`,
+                `[11] BMW Group. '<a href="https://www.bmwgroup.com/en/news/general/2023/GTC-2023.html" target="_blank">The Power of Virtual</a>'.`,
+                `[12] Genentech. '<a href="https://www.gene.com/stories/how-ai-is-accelerating-medicines-to-patients" target="_blank">How AI is Accelerating Medicines to Patients</a>'.`,
+                `[13] Congressional Budget Office (CBO). '<a href="https://www.cbo.gov/publication/59623" target="_blank">How Might Artificial Intelligence Affect Health Care?</a>'.`,
+                `[14] Stanford University. '<a href="https://hai.stanford.edu/news/ai-healthcare-new-era-medicine" target="_blank">AI in healthcare: a new era of medicine</a>'.`,
+                `[15] Stanford HAI. '<a href="https://aiindex.stanford.edu/report/" target="_blank">Artificial Intelligence Index Report 2024</a>'.`,
+                `[16] IBM. '<a href="https://www.ibm.com/topics/ai-in-finance" target="_blank">AI in Finance</a>'.`,
+                `[17] World Economic Forum. '<a href="https://www.weforum.org/agenda/2023/10/ai-is-transforming-financial-services/" target="_blank">This is how AI is transforming financial services</a>'.`,
+                `[18] World Economic Forum. '<a href="https://www.weforum.org/publications/the-future-of-jobs-report-2023/" target="_blank">The Future of Jobs Report 2023</a>'.`,
+                `[19] World Economic Forum. '<a href="https://www.weforum.org/agenda/2024/01/davos-24-this-is-the-impact-ai-will-have-on-the-job-market-according-to-the-wef/" target="_blank">This is the impact AI will have on the job market, according to the WEF</a>'.`,
+                `[20] World Economic Forum. '<a href="https://www.weforum.org/agenda/2023/05/jobs-created-by-ai/" target="_blank">These are the jobs that will be created by AI</a>'.`,
+                `[21] Stanford HAI. '<a href="https://aiindex.stanford.edu/wp-content/uploads/2023/04/HAI_AI-Index-Report_2023.pdf" target="_blank">Artificial Intelligence Index Report 2023</a>'.`,
+                `[22] Brookings Institution. '<a href="https://www.brookings.edu/articles/ai-and-the-future-of-work-what-do-we-know/" target="_blank">AI and the future of work: What do we know?</a>'.`,
+                `[23] Microsoft. '<a href="https://blogs.microsoft.com/on-the-issues/2024/02/19/brad-smith-ai-serve-europe-munich-security-conference/" target="_blank">Brad Smith on how AI can serve Europe</a>'.`,
+                `[24] Andreessen Horowitz. '<a href="https://a16z.com/the-new-new-moats/" target="_blank">The New New Moats: Why Systems of Intelligence are the Next Defensible Business Model</a>'.`,
+                `[25] Andreessen Horowitz. '<a href="https://a16z.com/the-data-platform-for-the-ai-native-era/" target="_blank">The Data Platform for the AI-Native Era</a>'.`,
+                `[26] International Monetary Fund (IMF). '<a href="https://www.imf.org/en/Blogs/Articles/2024/05/29/ais-power-demand-is-a-concern-for-climate" target="_blank">AI’s Power Demand Is a Concern for Climate</a>'.`,
+                `[27] U.S. Bureau of Economic Analysis (BEA). '<a href="https://www.bea.gov/system/files/2024-03/A-Roadmap-to-Measuring-the-Effects-of-AI-in-the-US-Economy.pdf" target="_blank">A Roadmap to Measuring the Effects of AI in the U.S. Economy</a>'.`,
+                `[28] American Economic Association (AEA). '<a href="https://www.aeaweb.org/journals/pandp/113/1" target="_blank">AEA Papers and Proceedings 2023</a>'.`,
+                `[29] International Monetary Fund (IMF) Working Paper. '<a href="https://www.imf.org/en/Publications/WP/Issues/2020/09/25/The-Labor-Market-Impact-of-Big-Data-and-AI-49774" target="_blank">The Labor Market Impact of Big Data and AI</a>'.`,
+                `[30] Oxfam. '<a href="https://www.oxfam.org/en/research/inequality-inc" target="_blank">Inequality Inc.</a>'.`,
+                `[31] Oxfam. '<a href="https://www.oxfam.org/en/press-releases/richest-1-bag-nearly-twice-much-wealth-rest-world-put-together-over-past-two-years" target="_blank">Richest 1% bag nearly twice as much wealth as the rest of the world put together over the past two years</a>'.`,
+                `[32] OECD. '<a href="https://oecd.ai/en/ai-principles" target="_blank">The OECD AI Principles</a>'.`,
+                `[33] Microsoft Research. '<a href="https://www.microsoft.com/en-us/research/video/the-future-of-work-with-ai/" target="_blank">The Future of Work with AI</a>'.`,
+                `[34] Teevan, J. '<a href="https://www.hbr.org/2023/07/how-ai-will-change-the-future-of-work" target="_blank">How AI Will Change the Future of Work</a>'.`
             ];
 
 
